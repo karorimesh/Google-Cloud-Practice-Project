@@ -1,5 +1,5 @@
-#VPC Networking
-##Explore the default network
+# VPC Networking
+## Explore the default network
 	gcloud compute networks describe default
 1. Delete the Firewall rules
 	gcloud compute firewall-rules delete
@@ -8,7 +8,7 @@
 3. Try to create a VM instance
 	gcloud compute instances create intance-1
 
-##Create an auto mode network
+## Create an auto mode network
 1. Create an auto mode VPC network with firewall rules
 	gcloud compute networks create mynetwork --project=qwiklabs-gcp-04-f5eddec1fa08 --subnet-mode=auto --bgp-routing-mode=regional
 
@@ -38,7 +38,7 @@ gcloud compute firewall-rules create mynetwork-allow-ssh --project=qwiklabs-gcp-
 	gcloud compute networks update mynetwork \
     --switch-to-custom-subnet-mode
 
-##Create custom mode networks
+## Create custom mode networks
 1. Create the managementnet network
 	gcloud compute networks create managementnet --project=qwiklabs-gcp-04-f5eddec1fa08 --subnet-mode=custom --bgp-routing-mode=regional
 
@@ -66,7 +66,11 @@ gcloud compute firewall-rules create mynetwork-allow-ssh --project=qwiklabs-gcp-
 	gcloud compute instances create privatenet-us-vm --zone=us-central1-c --machine-type=f1-micro --subnet=privatesubnet-us --image-family=debian-10 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
 	gcloud compute instances list --sort-by=ZONE
 	
-##Explore the connectivity across networks
+## Explore the connectivity across networks
+	gcloud compute instance describe mynet-us-vm
+	gcloud compute instance describe mynet-eu-vm
+	gcloud compute instance describe privatenet-us-vm
+	gcloud compute instance describe managementnet-us-vm
 1. Ping the external IP addresses
 	gcloud compute ssh mynet-us-vm --zone us-central1-c --tunnel-through-iap
 	ping -c 3 <Enter mynet-eu-vm's external IP here>

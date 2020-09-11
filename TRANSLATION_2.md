@@ -1,14 +1,14 @@
-#Running AI models on Kubeflow
-##Set up the environment
+# Running AI models on Kubeflow
+## Set up the environment
 	gcloud auth list
 	gcloud config list project
-	_**Enable Boost mode**_
+	**_Enable Boost mode_**
 
-##Download the project files to Cloud Shell
+## Download the project files to Cloud Shell
 	git clone https://github.com/GoogleCloudPlatform/training-data-analyst
 	cd training-data-analyst/courses/data-engineering/kubeflow-examples
 
-##Setting Environment Variables
+## Setting Environment Variables
 	export PROJECT_ID=$(gcloud config list project --format "value(core.project)")
 	gcloud config set project $PROJECT_ID
 	export ZONE=us-central1-a
@@ -16,20 +16,20 @@
 	cd ./mnist
 	WORKING_DIR=$PWD
 
-##Installing Kustomize
+## Installing Kustomize
 	mkdir $WORKING_DIR/bin
 	wget https://storage.googleapis.com/cloud-training/dataengineering/lab_assets/kubeflow-resources/kustomize_2.0.3_linux_amd64 -O $WORKING_DIR/bin/kustomize
 	chmod +x $WORKING_DIR/bin/kustomize
 	PATH=$PATH:${WORKING_DIR}/bin
 
-###Install kfctl
+### Install kfctl
 	wget -P /tmp https://storage.googleapis.com/cloud-training/dataengineering/lab_assets/kubeflow-resources/kfctl_v1.0-0-g94c35cf_linux.tar.gz
 	tar -xvf /tmp/kfctl_v1.0-0-g94c35cf_linux.tar.gz -C ${WORKING_DIR}/bin
 
-##Enabling the API
+## Enabling the API
 	gcloud services enable container.googleapis.com
 
-##Create a cluster
+## Create a cluster
 	export KUBEFLOW_USERNAME=<REPLACE_WITH_QWIKLABS_USERNAME>
 	export KUBEFLOW_PASSWORD=<REPLACE_WITH_QWIKLABS_PASSWORD>
 	export CONFIG_URI=https://storage.googleapis.com/cloud-training/dataengineering/lab_assets/kubeflow-resources/kfctl_gcp_basic_auth.v1.0.1.yaml
@@ -46,21 +46,21 @@
 	kubectl config set-context $(kubectl config current-context) --namespace=kubeflow
 	kubectl get all
 
-##Training
-###Setting up a Storage Bucket
+## Training
+### Setting up a Storage Bucket
 	BUCKET_NAME=${KF_NAME}-${PROJECT_ID}
 	gsutil mb gs://${BUCKET_NAME}/
 
-###Building the Container
+### Building the Container
 	IMAGE_PATH=us.gcr.io/$PROJECT_ID/kubeflow-train
 	docker build $WORKING_DIR -t $IMAGE_PATH -f $WORKING_DIR/Dockerfile.model
 	docker run -it $IMAGE_PATH
 
-	_**Press CTRL+C**_
+	**_Press CTRL+C_**
 	gcloud auth configure-docker --quiet
 	docker push $IMAGE_PATH
 
-##Training on the Cluster
+## Training on the Cluster
 	cd $WORKING_DIR/training/GCS
 	kustomize edit add configmap mnist-map-training \
     --from-literal=name=my-train-1
@@ -88,7 +88,7 @@
     kustomize build . | kubectl apply -f -
     kubectl describe tfjob
 
-    _**Press CTRL+C**_
+    **_Press CTRL+C_**
 
     kubectl logs -f my-train-1-chief-0
     gsutil ls -r gs://${BUCKET_NAME}/my-model/export
@@ -100,8 +100,8 @@
     sed -i 's/default-editor/kf-user/g' ../**/*
     kubectl describe service mnist-service
 
-##Deploying the UI
+## Deploying the UI
 	cd $WORKING_DIR/front
 	kustomize build . | kubectl apply -f -
 	kubectl port-forward svc/web-ui 8080:80
-	_**View the page using web preview on port 8080**_
+	**_View the page using web preview on port 8080_**
